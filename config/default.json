@@ -8,6 +8,6 @@
   },
   "mysql": {
     "client": "mysql2",
-    "connection": "mysql://root:@localhost:3306/todo"
+    "connection": "mysql://todo2:asd.456@den1.mysql3.gear.host:3306/todo2"
   }
 }

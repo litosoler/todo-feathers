@@ -1,10 +1,13 @@
 Vue.component("todo-container", {
 	template:  `
-				<table ref="myTabla" class="ui table">
+	<div class="ui container" style="padding-top: 20px;">
+				<add-todo ></add-todo>
+				<table class="ui celled striped table">
 					  <thead>
 					    <tr>
-					    	<th class="ten wide">Todo</th>
-					    	<th class="six wide">Completed</th>
+					    	<th class="twelve wide">Todo</th>
+					    	<th class="two wide">Completed</th>
+					    	<th class="two wide">Erase</th>
 					  	</tr>
 					  </thead>
 					  <tbody>
@@ -14,16 +17,19 @@ Vue.component("todo-container", {
 					  				<input type="text" :id="index" placeholder="New Todo..." v-model="element.descripcion"  @focusout="updateTodo">	
 								</div>
 							</td>
-					      	<td>
-					      		<div class="ui checked checkbox">
-					  				<input  :id="index" type="checkbox" v-model="element.completed" @change="updateTodo">
-					  				<label></label>
+					    <td><center>
+					      <div class="ui checked checkbox">
+					  			<input  :id="index" type="checkbox" v-model="element.completed" @change="updateTodo">
+					  			<label></label>
 								</div>
-							</td>
+							</center></td>
+							<td>
+								<center><i class="trash icon boton" @click="eraseTodo" :id="element.id"></i></center>
+								</td>
 					    </tr>
-					  </tbody>
-					   <add-todo></add-todo>
+					  </tbody>   
 				</table>
+</div>
 	`,
     data(){
     	return{
@@ -34,13 +40,20 @@ Vue.component("todo-container", {
   		this.initTodos();
   	},
     methods:{
-	    	initTodos: async function() {
-	  		this.todos = await feathersApp.service('todos').find().then(context => context.data);
+	    initTodos: async function() {
+	  		this.todos = await feathersApp.service('todos').
+	  					find().then(context => context.data);
   		},
   		updateTodo:async function(event){
   			let id = event.target.id;
   			let row = this.todos[id];
-  			 await feathersApp.service("todos").patch(row.id,{"descripcion" : row.descripcion, "completed": row.completed}).then(console.log("actualizado"));
+  			await feathersApp.service("todos").
+  			patch(row.id,{"descripcion" : row.descripcion, "completed": row.completed}).
+  			then(console.log("actualizado"));
+  		},
+  		eraseTodo: async function(event){
+  			let id = event.target.id;
+  			await app.service('todos').remove(id);
   		}
     }
 
@@ -48,31 +61,45 @@ Vue.component("todo-container", {
 
 Vue.component("add-todo", {
 	template: `
-		 <tfoot>
-    		<tr>
-    			<th>
-    				<div class="ui input">
-					  	<input type="text" placeholder="New Todo..." v-model="dbRow.descripcion">	
-					</div>
-    			</th>
-    			<th>
-    				<div class="ui buttons">
-					  <button class="ui button">Clean</button>
-					  <div class="or"></div>
-					  <button class="ui positive button">Save</button>
-					</div>
-    			</th>
-  			</tr>
-  		</tfoot>
+		<table class="float-right"  >
+			 <thead>
+	    		<tr>
+	    			<th>
+	    				<div class="ui input">
+						  	<input type="text" placeholder="New Todo..." v-model="dbRow.descripcion">	
+						</div>
+	    			</th>
+	    			<th colspan="2">
+	    				<div class="ui buttons">
+						  <button class="ui button" @click="cleanInput">Clean</button>
+						  <div class="or"></div>
+						  <button class="ui positive button" @click="addTodo">Save</button>
+						</div>
+	    			</th>
+	  			</tr>
+	  		</thead>
+	  	</table>
     `,
     data(){
     	return{
     		dbRow: {
-    			id: undefined,
-    			descripcion: "",
-    			prioridad: undefined,
-    			completed: false
-    		}
+				descripcion: "",
+				completed: 0,
+			}
+    	}
+    },
+    methods: {
+    	addTodo: async function(){
+    		let respuesta =  await feathersApp.service("todos").
+    						create(this.dbRow);
+
+
+    		console.log(respuesta);
+
+    	},
+    	cleanInput(){
+    		console.log("cleanTodo")
+    		this.dbRow.descripcion ="";
     	}
     }
 					    
