@@ -13,7 +13,34 @@ Vue.component("todo-container", {
 					  	</tr>
 					  </thead>
 					  <tbody>
-						<tr v-for="(element, index) of todos">
+						<tr v-for="(element, index) of incompletedTodos">
+					     	<td>
+					      		<div class="ui input">
+					  				<input type="text" :id="index" placeholder="New Todo..." v-model="element.descripcion"  @focusout="updateTodo">	
+								</div>
+							</td>
+					    <td><center>
+					      <div class="ui checked checkbox">
+					  			<input  :id="index" type="checkbox" v-model="element.completed" @change="updateTodo">
+					  			<label></label>
+								</div>
+							</center></td>
+							<td>
+								<center><i class="trash icon boton" @click="eraseTodo" :id="element.id"></i></center>
+								</td>
+					    </tr>
+					  </tbody>   
+				</table>
+				<table class="ui celled striped table">
+					  <thead>
+					    <tr>
+					    	<th class="twelve wide">Todo</th>
+					    	<th class="two wide">Completed</th>
+					    	<th class="two wide">Erase</th>
+					  	</tr>
+					  </thead>
+					  <tbody>
+						<tr v-for="(element, index) of completedTodos">
 					     	<td>
 					      		<div class="ui input">
 					  				<input type="text" :id="index" placeholder="New Todo..." v-model="element.descripcion"  @focusout="updateTodo">	
@@ -35,7 +62,7 @@ Vue.component("todo-container", {
 	`,
     data(){
     	return{
-    		todos:undefined,
+    		todos:[],
     	}
     },
     mounted: function(){
@@ -61,8 +88,15 @@ Vue.component("todo-container", {
   			await feathersApp.service('todos').remove(id);
   			this.initTodos();
   		}
+    },
+    computed:{
+    	incompletedTodos(){
+    		return this.todos.filter(todo => !todo.completed);
+    	},
+    	completedTodos(){
+    		return this.todos.filter(todo => todo.completed);
+    	}
     }
-
 })
 
 Vue.component("add-todo", {
