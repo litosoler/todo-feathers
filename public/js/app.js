@@ -1,7 +1,9 @@
+window.Event = new Vue();
+
 Vue.component("todo-container", {
 	template:  `
 	<div class="ui container" style="padding-top: 20px;">
-				<add-todo ></add-todo>
+				<add-todo></add-todo>
 				<table class="ui celled striped table">
 					  <thead>
 					    <tr>
@@ -38,7 +40,10 @@ Vue.component("todo-container", {
     },
     mounted: function(){
   		this.initTodos();
-  	},
+  	}, 
+  	created(){
+    	Event.$on('newTodo', ()=> this.initTodos());
+    },
     methods:{
 	    initTodos: async function() {
 	  		this.todos = await feathersApp.service('todos').
@@ -53,7 +58,8 @@ Vue.component("todo-container", {
   		},
   		eraseTodo: async function(event){
   			let id = event.target.id;
-  			await app.service('todos').remove(id);
+  			await feathersApp.service('todos').remove(id);
+  			this.initTodos();
   		}
     }
 
@@ -92,10 +98,7 @@ Vue.component("add-todo", {
     	addTodo: async function(){
     		let respuesta =  await feathersApp.service("todos").
     						create(this.dbRow);
-
-
-    		console.log(respuesta);
-
+    		Event.$emit('newTodo');
     	},
     	cleanInput(){
     		console.log("cleanTodo")
