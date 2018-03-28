@@ -31,7 +31,15 @@ Vue.component("todo-container", {
 					    </tr>
 					  </tbody>   
 				</table>
-				<table class="ui celled striped table">
+				<div class="ui accordion" v-if="this.completedTodos.length > 0" >					
+				  <div @click="show" class="title" >
+				    <i class="dropdown icon"></i>
+				    Completed!!
+				  	<div>
+				  	</div>
+				  </div>
+				  <div class="content">
+						<table  class="ui celled striped table">
 					  <thead>
 					    <tr>
 					    	<th class="twelve wide">Todo</th>
@@ -58,11 +66,15 @@ Vue.component("todo-container", {
 					    </tr>
 					  </tbody>   
 				</table>
+				  </div>
+				</div>
+				
 </div>
 	`,
     data(){
     	return{
     		todos:[],
+    		isShow: false,
     	}
     },
     mounted: function(){
@@ -87,6 +99,17 @@ Vue.component("todo-container", {
   			let id = event.target.id;
   			await feathersApp.service('todos').remove(id);
   			this.initTodos();
+  		},
+  		show(){
+  			if (this.isShow){
+  				$(".title").removeClass("active");
+  				$(".content").removeClass("active");
+  				this.isShow = false;
+  			}else{
+  				$(".title").addClass("active");
+  				$(".content").addClass("active");
+  				this.isShow = true;
+  			}
   		}
     },
     computed:{
@@ -133,9 +156,9 @@ Vue.component("add-todo", {
     		let respuesta =  await feathersApp.service("todos").
     						create(this.dbRow);
     		Event.$emit('newTodo');
+    		this.cleanInput();
     	},
     	cleanInput(){
-    		console.log("cleanTodo")
     		this.dbRow.descripcion ="";
     	}
     }
