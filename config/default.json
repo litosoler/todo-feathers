@@ -9,5 +9,29 @@
   "mysql": {
     "client": "mysql2",
     "connection": "mysql://todo2:asd.456@den1.mysql3.gear.host:3306/todo2"
+  },
+  "authentication": {
+    "secret": "d91ce23ba933a76949479277a9b2937b507479a79cc702bdd702b19759a7eb1ce36e371aef4643a06c82242566fe1412f3ea0ed3157d5f95b5cbc42a53534b350ffbea90d7025a28777c94920a9f17e16b5b163eb4203739999f413463b2d0cea6fbbd91201933746da3a3f089036e364c51d777c87482b0bac8a03e7638cb55fc257c22060869d42b887e83ca27afc79d37232e2309b1e65c7103a117f0fcfd4e1380d8e4c39379f4fd3dcda5b5fb2f30f4f1d34651bc3c7b0fd0a77484570df6e8fb11e740712c58d2bcd5be0514be179bb5273f74ac5332b3c6b78a5304d9287780a86a5559becf3de5524907baa5c8d05c602695d334d16b3bf962b61136",
+    "strategies": [
+      "jwt",
+      "local"
+    ],
+    "path": "/authentication",
+    "service": "users",
+    "jwt": {
+      "header": {
+        "typ": "access"
+      },
+      "audience": "https://yourdomain.com",
+      "subject": "anonymous",
+      "issuer": "feathers",
+      "algorithm": "HS256",
+      "expiresIn": "1d"
+    },
+    "local": {
+      "entity": "user",
+      "usernameField": "email",
+      "passwordField": "password"
+    }
   }
 }
